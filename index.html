@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Content Validity Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a lab bench. One header, three tabs (sort / rate / norms); each tab = inputs table, results table, item map + scale-level norm ladder. */
+:root{
+  --paper:#F5F7F6; --surface:#FFFFFF; --sunk:#EDF1EF; --ink:#18211F; --muted:#5A6562; --rule:#D6DDDA;
+  --focal:#0E6A5B; --orb1:#A86E12; --orb2:#6553A3;
+  --good:#2D7A4C; --warn:#A85D14; --bad:#AE3636;
+  --focal-soft:#DCEFEA; --good-soft:#E0F1E6; --warn-soft:#F7EAD9; --bad-soft:#F5E0DF;
+  --f-display:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --f-body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#0F1513; --surface:#161E1B; --sunk:#1C2622; --ink:#E4EBE8; --muted:#97A39F; --rule:#2B3632;
+  --focal:#4DBFA8; --orb1:#DDA548; --orb2:#A596E0;
+  --good:#6CC18E; --warn:#E39A55; --bad:#E27474;
+  --focal-soft:#173A33; --good-soft:#18352A; --warn-soft:#3A2A18; --bad-soft:#3D1F1F;
+  color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --paper:#0F1513; --surface:#161E1B; --sunk:#1C2622; --ink:#E4EBE8; --muted:#97A39F; --rule:#2B3632;
+  --focal:#4DBFA8; --orb1:#DDA548; --orb2:#A596E0;
+  --good:#6CC18E; --warn:#E39A55; --bad:#E27474;
+  --focal-soft:#173A33; --good-soft:#18352A; --warn-soft:#3A2A18; --bad-soft:#3D1F1F;
+  color-scheme:dark; }
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:15px/1.55 var(--f-body);}
+.wrap{max-width:1120px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;font-weight:600}
+h1{font-size:clamp(28px,4vw,40px);letter-spacing:-.01em;line-height:1.1}
+h2{font-size:22px}
+h3{font-size:17px}
+p{margin:0;max-width:68ch}
+.muted{color:var(--muted)}
+.eyebrow{font:500 11px/1 var(--f-mono);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+header{display:grid;gap:14px}
+.constructs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.constructs{grid-template-columns:1fr}}
+.cdef{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:12px;display:grid;gap:8px;min-width:0}
+.cname{display:flex;align-items:center;gap:8px}
+.cname label{font:500 11px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.cdef input[type=text]{font-family:var(--f-display);font-weight:600;font-size:16px;width:100%}
+.cdef textarea{font:13.5px/1.45 var(--f-body);color:var(--ink);background:var(--sunk);border:1px solid transparent;border-radius:6px;padding:7px 9px;width:100%;resize:vertical;min-height:4.6em}
+.cdef textarea:focus{border-color:var(--rule)}
+td textarea.itx{font:13.5px/1.4 var(--f-body);color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:5px 8px;width:100%;min-width:240px;height:3.2em;resize:vertical;display:block}
+textarea:focus-visible{outline:2px solid var(--focal);outline-offset:2px}
+.swatch{width:12px;height:12px;border-radius:3px;flex:none}
+.sw-f{background:var(--focal)} .sw-b{background:var(--orb1)} .sw-c{background:var(--orb2)}
+input[type=text],input[type=number],select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:5px 8px;min-width:0}
+input[type=number]{font-family:var(--f-mono);width:4.6em;font-variant-numeric:tabular-nums}
+input:focus-visible,select:focus-visible,button:focus-visible,[role=tab]:focus-visible{outline:2px solid var(--focal);outline-offset:2px}
+button{font:500 13px/1 var(--f-body);color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:8px 12px;cursor:pointer}
+button:hover{border-color:var(--focal)}
+button.x{padding:4px 7px;font-size:13px;color:var(--muted)}
+
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--rule);overflow-x:auto}
+[role=tab]{font:500 14px/1.2 var(--f-body);background:none;border:none;border-bottom:3px solid transparent;border-radius:0;padding:10px 12px 9px;color:var(--muted);white-space:nowrap}
+[role=tab][aria-selected=true]{color:var(--ink);border-bottom-color:var(--focal)}
+[role=tab] small{display:block;font:400 11px/1.3 var(--f-mono);color:var(--muted);margin-top:2px}
+
+.panel{display:flex;flex-direction:column;gap:20px}
+.lede{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:800px){.lede{grid-template-columns:1fr}}
+.formula{background:var(--sunk);border-radius:8px;padding:14px 16px;display:grid;gap:10px;font-size:14px}
+.formula .f{font-family:var(--f-display);font-size:17px}
+.formula .f i{font-style:italic}
+.formula dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:13px;color:var(--muted)}
+.formula dt{font-family:var(--f-display);font-style:italic;color:var(--ink)}
+.formula dd{margin:0}
+
+.controls{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:end}
+.ctl{display:grid;gap:4px}
+.ctl > span{font-size:12px;color:var(--muted)}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:16px;display:grid;gap:12px;min-width:0}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th{font:500 11px/1.3 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--rule);white-space:nowrap;vertical-align:bottom}
+td{padding:7px 8px;border-bottom:1px solid var(--rule);vertical-align:middle}
+td.r,th.r{text-align:right}
+tr:last-child td{border-bottom:none}
+td input[type=text]{width:100%;min-width:200px}
+.th-f{color:var(--focal)} .th-b{color:var(--orb1)} .th-c{color:var(--orb2)}
+
+.pill{display:inline-block;font:500 11.5px/1 var(--f-body);padding:4px 8px;border-radius:999px;white-space:nowrap}
+.ok{background:var(--good-soft);color:var(--good)}
+.rev{background:var(--warn-soft);color:var(--warn)}
+.bad{background:var(--bad-soft);color:var(--bad)}
+
+.stack{display:flex;height:10px;border-radius:3px;overflow:hidden;width:120px;background:var(--sunk)}
+.stack span{display:block;height:100%}
+.prof{display:grid;gap:2px;width:120px}
+.prof div{height:6px;border-radius:2px}
+
+.grid2{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.grid2{grid-template-columns:1fr}}
+
+.ladder{display:grid;gap:6px}
+.ladder .row{display:grid;grid-template-columns:7.5em 1fr;gap:10px;align-items:center}
+.ladder .val{font:600 22px/1 var(--f-mono);font-variant-numeric:tabular-nums}
+.rungs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px}
+.rungs div{background:var(--sunk);border-radius:4px;padding:6px 4px;text-align:center;font-size:11px;line-height:1.25;color:var(--muted)}
+.rungs div b{display:block;font:500 11px var(--f-mono);color:var(--muted)}
+.rungs div.on{background:var(--focal);color:var(--paper)}
+.rungs div.on b{color:var(--paper)}
+
+svg text{font-family:var(--f-mono);font-size:11px;fill:var(--muted)}
+svg .lab{fill:var(--ink);font-size:11px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+
+.note{font-size:13px;color:var(--muted);max-width:none}
+.guide p{font-size:14px}
+.drop{border-top:1px solid var(--rule);padding-top:12px;display:grid;gap:8px}
+.drop h3{font-size:15px}
+.delta{font:500 11.5px/1.2 var(--f-mono);margin-top:3px}
+.delta.up{color:var(--good)} .delta.dn{color:var(--bad)}
+.callout{border-left:3px solid var(--focal);padding:4px 0 4px 14px;font-size:14px}
+
+.norms table td{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.norms td.hit{background:var(--focal-soft);color:var(--ink);font-weight:500}
+.refs{font-size:13px;color:var(--muted);display:grid;gap:6px}
+.refs p{max-width:none;padding-left:2em;text-indent:-2em}
+footer{border-top:1px solid var(--rule);padding-top:16px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Scale development · pretest content validation</div>
+  <h1>Content Validity Lab</h1>
+  <p class="muted">Content validation involves raters who are asked about correspondence between items and various constructs. One of these is the construct of interest while the others are related “orbiting” constructs. Anderson and Gerbing (1991) have judges <em>sort</em> items; Hinkin and Tracey (1999) have them <em>rate</em> every item against every definition; Colquitt et al. (2019) turned both into correspondence and distinctiveness indices with empirical norms. Edit the constructs, items, and data below; every number recomputes.</p>
+  <p>Suppose that we are doing a content validation of a measure of work engagement and that we are using job involvement and intrinsic motivation as orbiting constructs.</p>
+  <div class="constructs" aria-label="Constructs and definitions shown to raters">
+    <div class="cdef">
+      <div class="cname"><span class="swatch sw-f"></span><label for="nF">Focal construct</label></div>
+      <input type="text" id="nF" value="Work engagement">
+      <textarea id="dF" aria-label="Definition of the focal construct">A positive, fulfilling state of mind at work, marked by vigor (high energy), dedication (enthusiasm and involvement), and absorption (being deeply engrossed in one’s work).</textarea>
+    </div>
+    <div class="cdef">
+      <div class="cname"><span class="swatch sw-b"></span><label for="nB">Orbiting construct 1</label></div>
+      <input type="text" id="nB" value="Job involvement">
+      <textarea id="dB" aria-label="Definition of orbiting construct 1">The degree to which a person psychologically identifies with their job and regards it as central to their self-image.</textarea>
+    </div>
+    <div class="cdef">
+      <div class="cname"><span class="swatch sw-c"></span><label for="nC">Orbiting construct 2</label></div>
+      <input type="text" id="nC" value="Intrinsic motivation">
+      <textarea id="dC" aria-label="Definition of orbiting construct 2">Doing one’s work because the activity itself is interesting and satisfying, rather than for outcomes separate from the activity.</textarea>
+    </div>
+  </div>
+  <p class="note">These are the definitions raters see when they sort or rate the items. Constructs, definitions, items, and data are editable examples. Colquitt et al.’s norms come from tasks with exactly this layout: one focal definition and two orbiting definitions.</p>
+</header>
+
+<div class="tabs" role="tablist">
+  <button role="tab" id="t-sort" aria-controls="p-sort" aria-selected="true">Item sort<small>Anderson &amp; Gerbing</small></button>
+  <button role="tab" id="t-rate" aria-controls="p-rate" aria-selected="false">Definition ratings<small>Hinkin &amp; Tracey</small></button>
+  <button role="tab" id="t-norms" aria-controls="p-norms" aria-selected="false">Benchmarks<small>Colquitt et al.</small></button>
+</div>
+
+<!-- ========== SORT ========== -->
+<section class="panel" id="p-sort" role="tabpanel" aria-labelledby="t-sort">
+  <div class="lede">
+    <div style="display:grid;gap:10px">
+      <h2>Sorting items into definitions</h2>
+      <p>Each judge reads the three definitions and assigns every item to the one it fits best. For each item, count how many judges chose each definition. Two indices summarize the counts. The proportion of substantive agreement (<i>p</i><sub>sa</sub>) asks how often judges put the item where you intended. The coefficient of substantive validity (<i>c</i><sub>sv</sub>) asks how far the intended definition beat its strongest rival, so an item that splits judges between two definitions is penalized twice.</p>
+      <p class="muted">Item-level significance uses an exact binomial test of the target count (Howard &amp; Melloy, 2016). Colquitt et al. called <i>p</i><sub>sa</sub> a correspondence index and <i>c</i><sub>sv</sub> a distinctiveness index, and normed both at the scale level.</p>
+    </div>
+    <div class="formula">
+      <div class="f"><i>p</i><sub>sa</sub> = <i>n</i><sub>c</sub> / <i>N</i></div>
+      <div class="f"><i>c</i><sub>sv</sub> = (<i>n</i><sub>c</sub> − <i>n</i><sub>o</sub>) / <i>N</i></div>
+      <dl>
+        <dt>n<sub>c</sub></dt><dd>judges who assigned the item to its intended definition</dd>
+        <dt>n<sub>o</sub></dt><dd>highest count for any other definition</dd>
+        <dt>N</dt><dd>judges who sorted the item</dd>
+      </dl>
+      <div class="muted" style="font-size:12.5px"><i>p</i><sub>sa</sub> runs 0 to 1; <i>c</i><sub>sv</sub> runs −1 to 1, and 0 means a tie with the strongest rival.</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <label class="ctl"><span>Chance rate p₀ for exact test</span>
+      <select id="p0"><option value="0.5" selected>.50</option><option value="0.3333333">1/3 (three definitions)</option></select></label>
+    <label class="ctl"><span>α</span><input type="number" id="alphaS" value="0.05" step="0.01" min="0.001" max="0.2"></label>
+    <button id="addS">Add item</button>
+  </div>
+
+  <div class="card">
+    <div class="scroll"><table id="sortTable">
+      <thead><tr>
+        <th>#</th><th>Item</th>
+        <th class="r th-f" id="hSF">Focal</th><th class="r th-b" id="hSB">Orb. 1</th><th class="r th-c" id="hSC">Orb. 2</th>
+        <th>Assignments</th>
+        <th class="r">N</th><th class="r">p<sub>sa</sub></th><th class="r">c<sub>sv</sub></th><th class="r">p (exact)</th><th>Status</th><th></th>
+      </tr></thead><tbody></tbody>
+    </table></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Item map</h3>
+      <div id="mapS"></div>
+      <div class="legend"><span><i class="dot" style="background:var(--good)"></i>Meets exact test</span><span><i class="dot" style="background:var(--warn)"></i>Review</span><span><i class="dot" style="background:var(--ink)"></i>Scale mean</span></div>
+    </div>
+    <div class="card">
+      <h3>Scale-level standing</h3>
+      <p class="note">Colquitt et al.’s labels describe the <em>mean</em> across the focal scale’s items, compared with 112 published scales. They are percentile norms, not item cutoffs.</p>
+      <div id="ladS" class="ladder"></div>
+      <div class="drop"><h3 id="dropS"></h3><p class="note" id="dropSn"></p><div id="ladS2" class="ladder"></div></div>
+      <div class="ctl"><span>Benchmark set</span><select class="normset" id="setS"></select></div>
+      <p class="note setexp">Chooses which group of published scales yours is compared with. <em>Overall</em> uses all 112. The other sets group scales by how strongly the focal measure correlates with its orbiting measures in substantive data (not in the pretest). Close neighbors make items harder to tell apart, so the bars are lower when that correlation is strong, especially for distinctiveness. If you know the correlation, enter it on the Benchmarks tab and the matching set is chosen for you.</p>
+    </div>
+  </div>
+  <p class="callout" id="insS"></p>
+</section>
+
+<!-- ========== RATE ========== -->
+<section class="panel" id="p-rate" role="tabpanel" aria-labelledby="t-rate" hidden>
+  <div class="lede">
+    <div style="display:grid;gap:10px">
+      <h2>Rating every item against every definition</h2>
+      <p>Each judge rates how well each item matches each definition (Colquitt et al. used a 7-point scale). Hinkin and Tracey analyzed the ratings with ANOVA: an item shows content adequacy when its mean on the intended definition is significantly higher than its means on the other definitions. Because the same judges rate all three definitions, this page uses a one-way repeated-measures ANOVA with a Greenhouse-Geisser correction, followed by paired one-sided contrasts of the intended definition against each orbiting one.</p>
+      <p class="muted">Colquitt et al. rescaled the same ratings into HTC (Hinkin-Tracey correspondence) and HTD (Hinkin-Tracey distinctiveness).</p>
+    </div>
+    <div class="formula">
+      <div class="f">HTC = <i>M</i><sub>focal</sub> / <i>A</i></div>
+      <div class="f">HTD = (<i>M</i><sub>focal</sub> − <i>M</i><sub>orbiting</sub>) / (<i>A</i> − 1)</div>
+      <dl>
+        <dt>M<sub>focal</sub></dt><dd>mean rating of the item on its intended definition</dd>
+        <dt>M<sub>orbiting</sub></dt><dd>mean rating on the two orbiting definitions, averaged</dd>
+        <dt>A</dt><dd>number of scale anchors</dd>
+      </dl>
+      <div class="muted" style="font-size:12.5px">HTC runs from 1/<i>A</i> to 1. HTD is a difference, so its typical values are much smaller than HTC’s; compare each index only with its own norms.</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <label class="ctl"><span>Judges</span><input type="number" id="nR" value="20" min="3" max="500" step="1"></label>
+    <label class="ctl"><span>Anchors (A)</span><select id="anch"><option>5</option><option selected>7</option></select></label>
+    <label class="ctl"><span>Within-cell SD</span><input type="number" id="sdR" value="0.9" step="0.1" min="0" max="3"></label>
+    <label class="ctl"><span>Judge leniency SD</span><input type="number" id="leR" value="0.4" step="0.1" min="0" max="3"></label>
+    <label class="ctl"><span>α</span><input type="number" id="alphaR" value="0.05" step="0.01" min="0.001" max="0.2"></label>
+    <button id="resamp">Draw new judges</button>
+    <button id="addR">Add item</button>
+  </div>
+  <div class="grid2 guide">
+    <div class="card">
+      <h3>Populations and samples</h3>
+      <p>The three <strong>Population means</strong> columns are yours to change. Each one is the mean rating an item would receive on that definition if every possible judge rated it. Raise an item’s focal mean, or push an orbiting mean up toward it, and see what happens.</p>
+      <p>Everything to the right of those columns comes from <strong>one sample of judges</strong> drawn from those populations. Each simulated judge has a personal leniency, adds random error, and rounds every rating to a whole scale anchor. The small numbers under each profile bar are that sample’s means. HTC, HTD, F, and the <em>p</em> values are all computed from the sample data, so they will not exactly match what the population means imply.</p>
+      <p>Click <strong>Draw new judges</strong> to replace the panel with a fresh sample from the same populations. Watch how far the statistics jump between draws: with 20 judges they move noticeably, and with 200 or more they settle close to the population values. A real pretest gives you only one draw.</p>
+    </div>
+    <div class="card">
+      <h3>What the F test tells you</h3>
+      <p><strong>F</strong> tests the null hypothesis that an item’s population mean ratings are equal on all three definitions (focal = orbiting 1 = orbiting 2). Each judge rates the item on every definition. That is what makes this a repeated-measures ANOVA. A significant F says only that the three means are not all equal. It does not say the focal mean is the highest. That is why the table also reports two one-sided paired contrasts of the focal definition against each orbiting definition. An item is marked <em>Retain</em> only when F and both contrasts are significant.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="scroll"><table id="rateTable">
+      <thead>
+        <tr>
+          <th rowspan="2">#</th><th rowspan="2">Item</th>
+          <th colspan="3" style="text-align:center">Population means</th>
+          <th rowspan="2">Observed profile</th>
+          <th rowspan="2" class="r">HTC</th><th rowspan="2" class="r">HTD</th>
+          <th rowspan="2" class="r" id="hFgg">F (GG)</th><th rowspan="2" class="r">p</th><th rowspan="2" class="r">Paired comparisons p<br>focal vs 1 · focal vs 2</th>
+          <th rowspan="2">Status</th><th rowspan="2"></th>
+        </tr>
+        <tr><th class="r th-f" id="hRF">Focal</th><th class="r th-b" id="hRB">Orb. 1</th><th class="r th-c" id="hRC">Orb. 2</th></tr>
+      </thead><tbody></tbody>
+    </table></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Item map</h3>
+      <div id="mapR"></div>
+      <div class="legend"><span><i class="dot" style="background:var(--good)"></i>Focal mean significantly highest</span><span><i class="dot" style="background:var(--warn)"></i>Review</span><span><i class="dot" style="background:var(--ink)"></i>Scale mean</span></div>
+    </div>
+    <div class="card">
+      <h3>Scale-level standing</h3>
+      <p class="note" id="anchNote">Colquitt et al.’s HTC and HTD norms come from 7-point ratings.</p>
+      <div id="ladR" class="ladder"></div>
+      <div class="drop"><h3 id="dropR"></h3><p class="note" id="dropRn"></p><div id="ladR2" class="ladder"></div></div>
+      <div class="ctl"><span>Benchmark set</span><select class="normset" id="setR"></select></div>
+      <p class="note setexp">Chooses which group of published scales yours is compared with. <em>Overall</em> uses all 112. The other sets group scales by how strongly the focal measure correlates with its orbiting measures in substantive data (not in the pretest). Close neighbors make items harder to tell apart, so the bars are lower when that correlation is strong, especially for distinctiveness. If you know the correlation, enter it on the Benchmarks tab and the matching set is chosen for you.</p>
+    </div>
+  </div>
+  <p class="callout" id="insR"></p>
+</section>
+
+<!-- ========== NORMS ========== -->
+<section class="panel norms" id="p-norms" role="tabpanel" aria-labelledby="t-norms" hidden>
+  <div class="lede">
+    <div style="display:grid;gap:10px">
+      <h2>Colquitt et al.’s evaluation criteria</h2>
+      <p>Colquitt, Sabey, Rodell, and Hill (2019) separated two questions that earlier work blended together. <strong>Definitional correspondence</strong> asks whether a scale’s items match the focal definition (<i>p</i><sub>sa</sub>, HTC). <strong>Definitional distinctiveness</strong> asks whether they match it better than they match orbiting definitions (<i>c</i><sub>sv</sub>, HTD).</p>
+      <p>They ran both designs on 112 published scales with naive judges drawn from the kind of population the scale would be used with, averaged each index across a scale’s items, and set the bands at percentiles of that distribution. A scale is <em>Very strong</em> when its mean sits at the 80th percentile or higher among those scales, and so on down. Because closely related constructs are harder to separate, they also gave norms conditional on how strongly the focal scale correlates with its orbiting scales.</p>
+    </div>
+    <div class="formula">
+      <div class="eyebrow">Reading the bands</div>
+      <dl style="grid-template-columns:auto 1fr">
+        <dt>Very strong</dt><dd>80th–99th percentile</dd>
+        <dt>Strong</dt><dd>60th–79th</dd>
+        <dt>Moderate</dt><dd>40th–59th</dd>
+        <dt>Weak</dt><dd>20th–39th</dd>
+        <dt>Lack of</dt><dd>0–19th</dd>
+      </dl>
+      <div class="muted" style="font-size:12.5px">Each value is the band’s lower bound. Apply the labels to scale-level means from naive judges, not to single items or to expert panels.</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <label class="ctl"><span>Mean focal–orbiting correlation (optional)</span><input type="number" id="orbR" step="0.01" min="-1" max="1" placeholder="e.g. .42" style="width:8em"></label>
+    <p class="note" id="setNote" style="align-self:center"></p>
+  </div>
+
+  <div class="card"><div class="scroll"><table id="normTable"></table></div>
+    <p class="note">Shaded cells show where the current example scale’s means fall under the selected benchmark set. Values transcribed from the <i>contentvalidR</i> R package’s implementation of Colquitt et al. (2019); where rounded published bounds overlap, each lower bound starts its band.</p>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Which design to use</h3>
+      <p class="note" style="color:var(--ink)">The sort is fast for judges and its indices are easy to explain, but it discards information: a judge who sees an item as a near-tie between two definitions still casts one vote. The rating design keeps that information and supports significance tests on every contrast, at the price of three ratings per item per judge.</p>
+      <p class="note" style="color:var(--ink)">Pick orbiting constructs that are genuinely close to the focal one. Distant orbits make every scale look distinctive, and that is exactly why Colquitt et al. supplied correlation-conditional norms.</p>
+    </div>
+    <div class="card refs">
+      <h3 style="color:var(--ink)">References</h3>
+      <p>Anderson, J. C., &amp; Gerbing, D. W. (1991). Predicting the performance of measures in a confirmatory factor analysis with a pretest assessment of their substantive validities. <i>Journal of Applied Psychology, 76</i>(5), 732–740.</p>
+      <p>Colquitt, J. A., Sabey, T. B., Rodell, J. B., &amp; Hill, E. T. (2019). Content validation guidelines: Evaluation criteria for definitional correspondence and definitional distinctiveness. <i>Journal of Applied Psychology, 104</i>(10), 1243–1265.</p>
+      <p>Hinkin, T. R., &amp; Tracey, J. B. (1999). An analysis of variance approach to content validation. <i>Organizational Research Methods, 2</i>(2), 175–186.</p>
+      <p>Howard, M. C., &amp; Melloy, R. C. (2016). Evaluating item-sort task methods: The presentation of a new statistical significance formula and methodological best practices. <i>Journal of Business and Psychology, 31</i>(1), 173–186.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="note">Indices recompute in your browser; your data never leave this page.</footer>
+</div>
+
+<script>
+(function(){
+/* ---------- state ---------- */
+const items=[
+  {t:"I feel bursting with energy when I am working.", s:[17,2,1], m:[6.2,3.4,3.6]},
+  {t:"Time flies when I am at work.",                   s:[14,1,5], m:[5.6,3.8,4.6]},
+  {t:"My job is a central part of who I am.",           s:[5,14,1], m:[4.3,6.0,3.5]},
+  {t:"I am fully absorbed in what I do at work.",       s:[16,3,1], m:[6.0,4.2,4.0]},
+  {t:"I do my work because I enjoy the work itself.",   s:[8,2,10], m:[4.8,3.3,5.7]},
+];
+let seed=20261014;
+
+const CUTS={
+  overall:{psa:[.91,.82,.72,.39],csv:[.81,.61,.51,.05],htc:[.91,.87,.84,.60],htd:[.35,.27,.18,.04]},
+  weaker:{psa:[.94,.90,.84,.52],csv:[.89,.80,.67,.04],htc:[.91,.88,.86,.67],htd:[.48,.35,.26,.12]},
+  moderate:{psa:[.91,.81,.76,.46],csv:[.83,.61,.52,.01],htc:[.92,.89,.85,.60],htd:[.34,.27,.20,.09]},
+  stronger:{psa:[.80,.75,.60,.24],csv:[.61,.50,.21,.01],htc:[.90,.86,.82,.63],htd:[.23,.15,.11,.01]}
+};
+const SETLAB={overall:"Overall (not correlation-conditioned)",weaker:"Weaker focal–orbiting r (≤ .34)",moderate:"Moderate focal–orbiting r (.35–.50)",stronger:"Stronger focal–orbiting r (≥ .51)"};
+const BANDS=["Very strong","Strong","Moderate","Weak","Lack of"];
+let normSet="overall";
+
+/* ---------- math ---------- */
+function lgamma(x){const g=7,c=[0.99999999999980993,676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if(x<0.5)return Math.log(Math.PI/Math.sin(Math.PI*x))-lgamma(1-x);x-=1;let a=c[0];const t=x+g+0.5;for(let i=1;i<9;i++)a+=c[i]/(x+i);return 0.5*Math.log(2*Math.PI)+(x+0.5)*Math.log(t)-t+Math.log(a);}
+function betacf(a,b,x){const MAXIT=300,EPS=3e-14,FP=1e-300;let qab=a+b,qap=a+1,qam=a-1,c=1,d=1-qab*x/qap;if(Math.abs(d)<FP)d=FP;d=1/d;let h=d;
+  for(let m=1;m<=MAXIT;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<FP)d=FP;c=1+aa/c;if(Math.abs(c)<FP)c=FP;d=1/d;h*=d*c;
+    aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<FP)d=FP;c=1+aa/c;if(Math.abs(c)<FP)c=FP;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<EPS)break;}return h;}
+function ibeta(x,a,b){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));
+  return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
+function pF(F,d1,d2){if(!isFinite(F))return F>0?0:1;if(F<=0)return 1;return ibeta(d2/(d2+d1*F),d2/2,d1/2);}
+function pTup(t,df){if(t===Infinity)return 0;if(t===-Infinity)return 1;const tail=0.5*ibeta(df/(df+t*t),df/2,0.5);return t>0?tail:1-tail;}
+function lchoose(n,k){return lgamma(n+1)-lgamma(k+1)-lgamma(n-k+1);}
+function binUp(k,n,p){if(k<=0)return 1;let s=0;for(let j=k;j<=n;j++)s+=Math.exp(lchoose(n,j)+j*Math.log(p)+(n-j)*Math.log(1-p));return Math.min(1,s);}
+function rng(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function gauss(r){let u=0,v=0;while(u===0)u=r();while(v===0)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+const mean=a=>a.reduce((x,y)=>x+y,0)/a.length;
+
+/* ---------- formatting ---------- */
+function f2(v,d=2){if(v==null||!isFinite(v))return "—";let s=Math.abs(v).toFixed(d);if(s.startsWith("0."))s=s.slice(1);return (v<0&&Number(s)!==0?"−":"")+s;}
+function fp(p){if(p==null||!isFinite(p))return "—";return p<.001?"<.001":f2(p,3);}
+function fx(v,d=2){return isFinite(v)?v.toFixed(d):"—";}
+function band(v,stat){const c=CUTS[normSet][stat];for(let i=0;i<4;i++)if(v>=c[i]-1e-9)return i;return 4;}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const names=()=>[document.getElementById("nF").value||"Focal",document.getElementById("nB").value||"Orbiting 1",document.getElementById("nC").value||"Orbiting 2"];
+
+/* ---------- sort analysis ---------- */
+function sortStats(){
+  const p0=+document.getElementById("p0").value, al=+document.getElementById("alphaS").value||.05;
+  return items.map(it=>{const [c,b,o]=it.s.map(v=>Math.max(0,Math.round(+v||0)));const N=c+b+o;
+    if(N===0)return {N:0};
+    const no=Math.max(b,o);const psa=c/N,csv=(c-no)/N,p=binUp(c,N,p0);
+    const comp=b>=o?1:2;
+    return {N,psa,csv,p,ok:p<al,comp,c,b,o};});
+}
+function renderSort(){
+  const tb=document.querySelector("#sortTable tbody"),st=sortStats(),nm=names();
+  tb.innerHTML=items.map((it,i)=>{const r=st[i];
+    const w=r.N?[r.c,r.b,r.o].map(v=>100*v/r.N):[0,0,0];
+    return `<tr>
+      <td class="num muted">${i+1}</td>
+      <td><textarea class="itx" rows="2" data-k="t" data-i="${i}" id="st${i}" aria-label="Item ${i+1} text">${esc(it.t)}</textarea></td>
+      ${[0,1,2].map(j=>`<td class="r"><input type="number" min="0" step="1" data-k="s" data-i="${i}" data-j="${j}" id="sc${i}_${j}" value="${it.s[j]}" aria-label="Judges choosing ${esc(nm[j])} for item ${i+1}"></td>`).join("")}
+      <td><div class="stack" title="${esc(nm[0])} ${r.c||0} · ${esc(nm[1])} ${r.b||0} · ${esc(nm[2])} ${r.o||0}"><span style="width:${w[0]}%;background:var(--focal)"></span><span style="width:${w[1]}%;background:var(--orb1)"></span><span style="width:${w[2]}%;background:var(--orb2)"></span></div></td>
+      <td class="r num">${r.N||"—"}</td>
+      <td class="r num">${r.N?f2(r.psa):"—"}</td>
+      <td class="r num">${r.N?f2(r.csv):"—"}</td>
+      <td class="r num">${r.N?fp(r.p):"—"}</td>
+      <td>${!r.N?'<span class="pill bad">No data</span>':r.ok?'<span class="pill ok">Retain</span>':(r.csv<=0?`<span class="pill bad">Pulled to ${esc(nm[r.comp])}</span>`:'<span class="pill rev">Review</span>')}</td>
+      <td><button class="x" data-del="s" data-i="${i}" aria-label="Remove item ${i+1}">✕</button></td></tr>`;}).join("");
+  const v=st.filter(r=>r.N);
+  const mp=v.length?mean(v.map(r=>r.psa)):NaN, mc=v.length?mean(v.map(r=>r.csv)):NaN;
+  ladder("ladS",[["p<sub>sa</sub> mean","psa",mp],["c<sub>sv</sub> mean","csv",mc]]);
+  dropBlock("S",st.map((r,i)=>r.N?{i,dist:r.csv,corr:r.psa}:null).filter(Boolean),["psa","csv"],["p<sub>sa</sub> mean","c<sub>sv</sub> mean"],[mp,mc],"c<sub>sv</sub>","p<sub>sa</sub>");
+  drawMap("mapS",v.map((r,k)=>({x:r.psa,y:r.csv,ok:r.ok,i:st.indexOf(r)+1})),{x:mp,y:mc},"p_sa  (correspondence)","c_sv  (distinctiveness)",0);
+  // insight
+  const weak=st.map((r,i)=>({r,i})).filter(o=>o.r.N&&!o.r.ok);
+  const split=st.map((r,i)=>({r,i})).find(o=>o.r.N&&o.r.psa>=.4&&o.r.csv<.2&&o.r.csv>-.2);
+  let s=`${v.length-weak.length} of ${v.length} items pass the exact test. Scale means: p<sub>sa</sub> = ${f2(mp)} (${BANDS[band(mp,"psa")]}), c<sub>sv</sub> = ${f2(mc)} (${BANDS[band(mc,"csv")]}).`;
+  if(split)s+=` Item ${split.i+1} shows why c<sub>sv</sub> exists: ${Math.round(split.r.psa*100)}% of judges chose the focal definition, yet nearly as many chose ${esc(nm[split.r.comp])}.`;
+  document.getElementById("insS").innerHTML=s;
+  syncNorms(mp,mc,null,null);
+}
+
+/* ---------- rating analysis ---------- */
+let sim=[];
+function simulate(){
+  const n=Math.max(3,Math.min(500,Math.round(+document.getElementById("nR").value||20)));
+  const A=+document.getElementById("anch").value, sd=Math.max(0,+document.getElementById("sdR").value||0), le=Math.max(0,+document.getElementById("leR").value||0);
+  const r=rng(seed);const len=Array.from({length:n},()=>gauss(r)*le);
+  sim=items.map(it=>Array.from({length:n},(_,i)=>it.m.map(mu=>Math.min(A,Math.max(1,Math.round((+mu||1)+len[i]+gauss(r)*sd))))));
+}
+function rmAnova(X){ // X: n x 3
+  const n=X.length,k=3;const cm=[0,1,2].map(j=>mean(X.map(r=>r[j])));const rm=X.map(r=>mean(r));const G=mean(rm);
+  let sst=0;X.forEach(r=>r.forEach(v=>sst+=(v-G)**2));
+  const ssc=n*cm.reduce((s,m)=>s+(m-G)**2,0), sss=k*rm.reduce((s,m)=>s+(m-G)**2,0), sse=Math.max(0,sst-ssc-sss);
+  const d1=k-1,d2=(k-1)*(n-1);const F=sse>0?(ssc/d1)/(sse/d2):(ssc>0?Infinity:NaN);
+  // Greenhouse-Geisser epsilon
+  const S=[[0,0,0],[0,0,0],[0,0,0]];for(let a=0;a<3;a++)for(let b=0;b<3;b++){let s=0;X.forEach(r=>s+=(r[a]-cm[a])*(r[b]-cm[b]));S[a][b]=s/(n-1);}
+  const rmS=S.map(r=>mean(r)),gS=mean(rmS);let tr=0,sq=0;
+  for(let a=0;a<3;a++)for(let b=0;b<3;b++){const d=S[a][b]-rmS[a]-rmS[b]+gS;if(a===b)tr+=d;sq+=d*d;}
+  let eps=sq>0?(tr*tr)/((k-1)*sq):1;eps=Math.min(1,Math.max(1/(k-1),eps));
+  const p=isNaN(F)?1:pF(F,d1*eps,d2*eps);
+  const ct=[1,2].map(j=>{const d=X.map(r=>r[0]-r[j]);const md=mean(d);const s=Math.sqrt(d.reduce((a,v)=>a+(v-md)**2,0)/(n-1));const t=s>0?md/(s/Math.sqrt(n)):(md>0?Infinity:md<0?-Infinity:0);return t===0&&s===0?1:pTup(t,n-1);});
+  return {cm,F,d1,d2,eps,p,ct};
+}
+function renderRate(){
+  const A=+document.getElementById("anch").value, al=+document.getElementById("alphaR").value||.05, nm=names();
+  const res=sim.map(X=>{const a=rmAnova(X);const htc=a.cm[0]/A, htd=(a.cm[0]-(a.cm[1]+a.cm[2])/2)/(A-1);
+    const ok=a.p<al&&a.ct[0]<al&&a.ct[1]<al&&a.cm[0]>a.cm[1]&&a.cm[0]>a.cm[2];
+    const comp=a.cm[1]>=a.cm[2]?1:2;return {...a,htc,htd,ok,comp};});
+  const tb=document.querySelector("#rateTable tbody");
+  tb.innerHTML=items.map((it,i)=>{const r=res[i];
+    const bars=r.cm.map((m,j)=>`<div style="width:${100*(m-1)/(A-1)}%;background:var(--${["focal","orb1","orb2"][j]})" title="${esc(nm[j])}: ${fx(m)}"></div>`).join("");
+    const lose=r.cm[r.comp]>=r.cm[0];
+    return `<tr>
+      <td class="num muted">${i+1}</td>
+      <td><textarea class="itx" rows="2" data-k="t" data-i="${i}" id="rt${i}" aria-label="Item ${i+1} text">${esc(it.t)}</textarea></td>
+      ${[0,1,2].map(j=>`<td class="r"><input type="number" min="1" max="${A}" step="0.1" data-k="m" data-i="${i}" data-j="${j}" id="rm${i}_${j}" value="${it.m[j]}" aria-label="Population mean on ${esc(nm[j])} for item ${i+1}"></td>`).join("")}
+      <td><div class="prof">${bars}</div><div class="num muted" style="font-size:11px;margin-top:3px">${r.cm.map(m=>fx(m,1)).join(" · ")}</div></td>
+      <td class="r num">${f2(r.htc)}</td>
+      <td class="r num">${f2(r.htd)}</td>
+      <td class="r num">${isFinite(r.F)?fx(r.F,1):"—"}</td>
+      <td class="r num">${fp(r.p)}</td>
+      <td class="r num">${fp(r.ct[0])} · ${fp(r.ct[1])}</td>
+      <td>${r.ok?'<span class="pill ok">Retain</span>':lose?`<span class="pill bad">Pulled to ${esc(nm[r.comp])}</span>`:'<span class="pill rev">Review</span>'}</td>
+      <td><button class="x" data-del="r" data-i="${i}" aria-label="Remove item ${i+1}">✕</button></td></tr>`;}).join("");
+  const n=sim[0]?sim[0].length:0;
+  document.getElementById("hFgg").innerHTML=`F (GG)<br><span style="text-transform:none">df 2, ${2*(n-1)}</span>`;
+  const mh=res.length?mean(res.map(r=>r.htc)):NaN, md=res.length?mean(res.map(r=>r.htd)):NaN;
+  ladder("ladR",[["HTC mean","htc",mh],["HTD mean","htd",md]]);
+  dropBlock("R",res.map((r,i)=>({i,dist:r.htd,corr:r.htc})),["htc","htd"],["HTC mean","HTD mean"],[mh,md],"HTD","HTC");
+  drawMap("mapR",res.map((r,i)=>({x:r.htc,y:r.htd,ok:r.ok,i:i+1})),{x:mh,y:md},"HTC  (correspondence)","HTD  (distinctiveness)",1/A);
+  document.getElementById("anchNote").textContent= A===7?"Colquitt et al.’s HTC and HTD norms come from 7-point ratings, the setting used here.":"Colquitt et al.’s HTC and HTD norms come from 7-point ratings; with 5 anchors the comparison is approximate.";
+  const nOk=res.filter(r=>r.ok).length;
+  let s=`${nOk} of ${res.length} items have a focal mean significantly above both orbiting means. Scale means: HTC = ${f2(mh)} (${BANDS[band(mh,"htc")]}), HTD = ${f2(md)} (${BANDS[band(md,"htd")]}).`;
+  const hi=res.map((r,i)=>({r,i})).find(o=>o.r.htc>=.75&&!o.r.ok);
+  if(hi)s+=` Item ${hi.i+1} has high correspondence (HTC = ${f2(hi.r.htc)}) but fails on distinctiveness: judges also see it as ${esc(nm[hi.r.comp])}.`;
+  document.getElementById("insR").innerHTML=s;
+  syncNorms(null,null,mh,md);
+}
+
+/* ---------- ladder + map ---------- */
+function ladder(id,rows){
+  document.getElementById(id).innerHTML=rows.map(([lab,stat,v,prev])=>{const c=CUTS[normSet][stat];const b=isFinite(v)?band(v,stat):-1;
+    const rungs=[4,3,2,1,0].map(i=>`<div class="${i===b?"on":""}">${BANDS[i]}<b>${i===4?"&lt; "+f2(c[3]):"≥ "+f2(c[i])}</b></div>`).join("");
+    let d="";if(prev!=null&&isFinite(prev)&&isFinite(v)){const dv=v-prev;d=`<div class="delta ${dv>0.0005?"up":dv<-0.0005?"dn":""}">${dv>=0?"+":"−"}${f2(Math.abs(dv))} vs all items</div>`;}
+    return `<div class="row"><div><div class="muted" style="font-size:12px">${lab}</div><div class="val">${f2(v)}</div>${d}</div><div class="rungs">${rungs}</div></div>`;}).join("");
+}
+/* scale standing without the most problematic item: lowest distinctiveness, ties broken by lowest correspondence */
+function dropBlock(p,rows,stats,labs,full,distLab,corrLab){
+  const h=document.getElementById("drop"+p),n=document.getElementById("drop"+p+"n"),L=document.getElementById("lad"+p+"2");
+  if(rows.length<2){h.textContent="If the most problematic item were dropped";n.textContent="Add a second item to see this comparison.";L.innerHTML="";return;}
+  const worst=rows.slice().sort((a,b)=>a.dist-b.dist||a.corr-b.corr)[0];
+  const rest=rows.filter(r=>r!==worst);
+  const mc=mean(rest.map(r=>r.corr)),md=mean(rest.map(r=>r.dist));
+  const txt=items[worst.i].t;
+  h.textContent=`If item ${worst.i+1} were dropped`;
+  n.innerHTML=`“${esc(txt.length>70?txt.slice(0,68)+"…":txt)}” has the lowest ${distLab} (${f2(worst.dist)}) on the scale. Means over the remaining ${rest.length} items:`;
+  ladder("lad"+p+"2",[[labs[0],stats[0],mc,full[0]],[labs[1],stats[1],md,full[1]]]);
+}
+function drawMap(id,pts,m,xl,yl,xmin){
+  const W=520,H=320,L=48,R=16,T=14,B=42;
+  const ys=pts.map(p=>p.y).filter(isFinite);
+  const y0=Math.min(-0.2,Math.floor((Math.min(...ys,0)-.05)*10)/10), y1=1;
+  const x0=Math.min(xmin, Math.floor(Math.min(...pts.map(p=>p.x).filter(isFinite),1)*10)/10), x1=1;
+  const sx=v=>L+(v-x0)/(x1-x0)*(W-L-R), sy=v=>T+(y1-v)/(y1-y0)*(H-T-B);
+  let g="";
+  for(let t=Math.ceil(x0*5)/5;t<=x1+1e-9;t+=.2){g+=`<line x1="${sx(t)}" x2="${sx(t)}" y1="${T}" y2="${H-B}" stroke="var(--rule)"/><text x="${sx(t)}" y="${H-B+15}" text-anchor="middle">${f2(t,1)}</text>`;}
+  for(let t=Math.ceil(y0*5)/5;t<=y1+1e-9;t+=.2){const z=Math.abs(t)<1e-9;g+=`<line x1="${L}" x2="${W-R}" y1="${sy(t)}" y2="${sy(t)}" stroke="var(--${z?"muted":"rule"})" ${z?'stroke-dasharray="3 3"':''}/><text x="${L-6}" y="${sy(t)+4}" text-anchor="end">${f2(t,1)}</text>`;}
+  g+=`<text x="${(L+W-R)/2}" y="${H-6}" text-anchor="middle">${xl}</text><text transform="translate(12 ${(T+H-B)/2}) rotate(-90)" text-anchor="middle">${yl}</text>`;
+  pts.forEach(p=>{if(!isFinite(p.x))return;const cx=sx(p.x),cy=sy(p.y);g+=`<circle cx="${cx}" cy="${cy}" r="7" fill="var(--${p.ok?"good":"warn"})" fill-opacity=".9"/><text class="lab" x="${cx+10}" y="${cy+4}">${p.i}</text>`;});
+  if(isFinite(m.x)){const cx=sx(m.x),cy=sy(m.y);g+=`<path d="M${cx-7} ${cy}L${cx} ${cy-7}L${cx+7} ${cy}L${cx} ${cy+7}Z" fill="var(--ink)"/><text class="lab" x="${cx+10}" y="${cy-8}">mean</text>`;}
+  document.getElementById(id).innerHTML=`<div class="scroll"><svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px;display:block" role="img" aria-label="Item map of correspondence against distinctiveness">${g}</svg></div>`;
+}
+
+/* ---------- norms table ---------- */
+let cur={psa:NaN,csv:NaN,htc:NaN,htd:NaN};
+function syncNorms(psa,csv,htc,htd){if(psa!=null){cur.psa=psa;cur.csv=csv;}if(htc!=null){cur.htc=htc;cur.htd=htd;}renderNormTable();}
+function renderNormTable(){
+  const stats=[["psa","p<sub>sa</sub>","Correspondence · sort"],["csv","c<sub>sv</sub>","Distinctiveness · sort"],["htc","HTC","Correspondence · ratings"],["htd","HTD","Distinctiveness · ratings"]];
+  let h=`<thead><tr><th>Index</th><th>Current scale mean</th>${BANDS.map(b=>`<th class="r">${b}</th>`).join("")}</tr></thead><tbody>`;
+  stats.forEach(([k,lab,sub])=>{const c=CUTS[normSet][k];const v=cur[k];const b=isFinite(v)?band(v,k):-1;
+    h+=`<tr><td style="font-family:var(--f-body)"><b>${lab}</b><div class="muted" style="font-size:11.5px">${sub}</div></td><td>${f2(v)}</td>`+
+    [0,1,2,3,4].map(i=>`<td class="r ${i===b?"hit":""}">${i===4?"&lt; "+f2(c[3]):"≥ "+f2(c[i])}</td>`).join("")+`</tr>`;});
+  document.getElementById("normTable").innerHTML=h+"</tbody>";
+  document.getElementById("setNote").textContent="Using: "+SETLAB[normSet];
+  document.querySelectorAll(".normset").forEach(s=>{if(s.value!==normSet)s.value=normSet;});
+}
+function setNorm(s){normSet=s;const r=document.getElementById("orbR");if(s==="overall")r.value="";renderSort();renderRate();}
+
+/* ---------- wiring ---------- */
+document.querySelectorAll(".normset").forEach(sel=>{sel.innerHTML=Object.keys(SETLAB).map(k=>`<option value="${k}">${SETLAB[k]}</option>`).join("");sel.addEventListener("change",e=>setNorm(e.target.value));});
+document.getElementById("orbR").addEventListener("input",e=>{const v=e.target.value;if(v===""){normSet="overall";}else{const r=+v;if(!isFinite(r))return;normSet=r<=.34?"weaker":r<=.50?"moderate":"stronger";}renderSort();renderRate();});
+
+function headers(){const nm=names();["S","R"].forEach(p=>{document.getElementById("h"+p+"F").textContent=nm[0];document.getElementById("h"+p+"B").textContent=nm[1];document.getElementById("h"+p+"C").textContent=nm[2];});}
+["nF","nB","nC"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{headers();renderSort();renderRate();}));
+
+function onTable(e){const t=e.target;if(!t.dataset||!t.dataset.k)return;const i=+t.dataset.i;
+  if(t.dataset.k==="t"){items[i].t=t.value;return;}
+  if(t.dataset.k==="s"){items[i].s[+t.dataset.j]=Math.max(0,Math.round(+t.value||0));renderSortKeep(t.id);}
+  if(t.dataset.k==="m"){const A=+document.getElementById("anch").value;items[i].m[+t.dataset.j]=Math.min(A,Math.max(1,+t.value||1));simulate();renderRateKeep(t.id);}
+}
+function keep(fn,id){const el=document.getElementById(id);const pos=el&&el.selectionStart!=null?null:null;fn();const n=document.getElementById(id);if(n){n.focus();}}
+function renderSortKeep(id){keep(renderSort,id);}
+function renderRateKeep(id){keep(renderRate,id);}
+document.getElementById("sortTable").addEventListener("change",onTable);
+document.getElementById("rateTable").addEventListener("change",onTable);
+document.addEventListener("input",e=>{if(e.target.dataset&&e.target.dataset.k==="t"){items[+e.target.dataset.i].t=e.target.value;}});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-del]");if(!b)return;if(items.length<=1)return;items.splice(+b.dataset.i,1);simulate();renderSort();renderRate();});
+function addItem(){items.push({t:"New item",s:[10,5,5],m:[5,4,4]});simulate();renderSort();renderRate();}
+document.getElementById("addS").addEventListener("click",addItem);
+document.getElementById("addR").addEventListener("click",addItem);
+["p0","alphaS"].forEach(id=>document.getElementById(id).addEventListener("change",renderSort));
+["nR","sdR","leR"].forEach(id=>document.getElementById(id).addEventListener("change",()=>{simulate();renderRate();}));
+document.getElementById("anch").addEventListener("change",e=>{const A=+e.target.value;items.forEach(it=>{it.m=it.m.map(v=>Math.min(A,Math.max(1,A===5?Math.round((1+(v-1)*4/6)*10)/10:Math.round((1+(v-1)*6/4)*10)/10)));});simulate();renderRate();});
+document.getElementById("alphaR").addEventListener("change",renderRate);
+document.getElementById("resamp").addEventListener("click",()=>{seed=(seed*1103515245+12345)>>>0;simulate();renderRate();});
+
+// tabs
+const tabs=[...document.querySelectorAll('[role=tab]')];
+function show(id){tabs.forEach(t=>{const on=t.id===id;t.setAttribute("aria-selected",on);t.tabIndex=on?0:-1;document.getElementById(t.getAttribute("aria-controls")).hidden=!on;});try{localStorage.setItem("cvl-tab",id);}catch(e){}}
+tabs.forEach((t,k)=>{t.addEventListener("click",()=>show(t.id));t.addEventListener("keydown",e=>{if(e.key==="ArrowRight"||e.key==="ArrowLeft"){const n=tabs[(k+(e.key==="ArrowRight"?1:tabs.length-1))%tabs.length];show(n.id);n.focus();}});});
+const hashMap={sort:"t-sort",rate:"t-rate",norms:"t-norms"};
+let start=hashMap[location.hash.slice(1)];if(!start){try{start=localStorage.getItem("cvl-tab");}catch(e){}}
+headers();simulate();renderSort();renderRate();show(start&&document.getElementById(start)?start:"t-sort");
+})();
+</script>
+
+</body>
+</html>
