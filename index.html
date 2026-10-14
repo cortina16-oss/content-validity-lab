@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Content Validity Lab</title>
+<title>Content Validation Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -123,6 +123,8 @@ svg .lab{fill:var(--ink);font-size:11px}
 
 .note{font-size:13px;color:var(--muted);max-width:none}
 .guide p{font-size:14px}
+.important{background:var(--warn-soft);border-left:3px solid var(--warn);border-radius:0 8px 8px 0;padding:10px 14px;max-width:none}
+.important strong{color:var(--warn);letter-spacing:.02em}
 .drop{border-top:1px solid var(--rule);padding-top:12px;display:grid;gap:8px}
 .drop h3{font-size:15px}
 .delta{font:500 11.5px/1.2 var(--f-mono);margin-top:3px}
@@ -143,8 +145,11 @@ footer{border-top:1px solid var(--rule);padding-top:16px}
 <div class="wrap">
 <header>
   <div class="eyebrow">Scale development · pretest content validation</div>
-  <h1>Content Validity Lab</h1>
-  <p class="muted">Content validation involves raters who are asked about correspondence between items and various constructs. One of these is the construct of interest while the others are related “orbiting” constructs. Anderson and Gerbing (1991) have judges <em>sort</em> items; Hinkin and Tracey (1999) have them <em>rate</em> every item against every definition; Colquitt et al. (2019) turned both into correspondence and distinctiveness indices with empirical norms. Edit the constructs, items, and data below; every number recomputes.</p>
+  <h1>Content Validation Lab</h1>
+  <p class="muted">Content validation involves raters who are asked about correspondence between items and various constructs. One of these is the construct of interest while the others are related “orbiting” constructs. Anderson and Gerbing (1991) have judges <em>sort</em> items; Hinkin and Tracey (1999) have them <em>rate</em> every item against every definition; Colquitt et al. (2019) turned both into correspondence and distinctiveness indices with empirical norms.</p>
+  <p class="important"><strong>IMPORTANT NOTE:</strong> These procedures only look at whether the items match the construct. They do not consider whether the entire construct domain is covered by the items. See Alley et al. (2026) for discussion of this issue.</p>
+  <h2 style="margin-top:6px">Using this tool</h2>
+  <p>Edit the constructs, items, and data below; every number recomputes.</p>
   <p>Suppose that we are doing a content validation of a measure of work engagement and that we are using job involvement and intrinsic motivation as orbiting constructs.</p>
   <div class="constructs" aria-label="Constructs and definitions shown to raters">
     <div class="cdef">
